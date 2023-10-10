@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "969581575552",
-    "project_id": "insta-92947",
-    "storage_bucket": "insta-92947.appspot.com"
+    "project_number": "473279414740",
+    "project_id": "instagram-5dc77",
+    "storage_bucket": "instagram-5dc77.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:969581575552:android:ab6307a0f39c26f005d565",
+        "mobilesdk_app_id": "1:473279414740:android:38b201c8690600935b1641",
         "android_client_info": {
           "package_name": "com.example.instagram"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBnUff0uKYurQubkfFCn6bEeLU_rzOlvgo"
+          "current_key": "AIzaSyD3iCditZqyWO8Ki4PPi-Noy6vz5p7wrXQ"
         }
       ],
       "services": {
