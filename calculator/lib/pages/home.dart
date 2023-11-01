@@ -42,15 +42,11 @@ class _HomeState extends State<Home> {
                 Row(
                   children: [
                     Expanded(
-                      child: ElevatedButton(onPressed:() {setState(() {s ="";
+                      child: InkWell(onPressed:() {setState(() {s ="";
                       result ="0";
                       }); }, child: Container(
                         height: 100,
                         child: Center(child: Text("C" , style: TextStyle( fontSize: 60),)
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.all(Radius.circular()),
                         ),
                       )),
                     ),
