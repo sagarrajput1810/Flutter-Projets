@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram/resources/auth_methods.dart';
+import 'package:instagram/screens/signup.dart';
+import 'package:instagram/utils/utils.dart';
 import 'package:instagram/widgets/text_field_input.dart';
+
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive.dart';
+import '../responsive/web_screen_layout.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +19,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -19,6 +28,39 @@ class _LoginScreenState extends State<LoginScreen> {
     emailController.dispose();
     passwordController.dispose();
   }
+  void navigteToSignup(){
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => const SignupScreen()));
+  }
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await Authmethods().loginUser(
+        email: emailController.text,
+        password: passwordController.text);
+    if(res == "success"){
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const ResponsiveLayout(
+              webScreenLayout: WebScreenLayout(),
+              mobileScreenLayout: MobileScreenLayout()
+          ))
+      );
+      // this is not use because
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(
+      //     builder:(context) => HomeScreen()));
+    }else{
+      showSnackBar(context, res);
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,8 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24,
               ),
               InkWell(
+                onTap: loginUser,
                 child: Container(
-                  child: Text('Log in'),
+                  child: _isLoading?Center(child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),) :Text('Log in'),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -75,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () { },
+                    onTap: navigteToSignup,
                     child: Container(
                       child: Text("Sign up", style: TextStyle(
                         fontWeight: FontWeight.bold,

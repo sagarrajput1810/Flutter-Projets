@@ -1,6 +1,16 @@
+
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:instagram/resources/auth_methods.dart';
+import 'package:instagram/screens/login.dart';
+import 'package:instagram/utils/utils.dart';
 
+import '../responsive/mobile_screen_layout.dart';
+import '../responsive/responsive.dart';
+import '../responsive/web_screen_layout.dart';
 import '../widgets/text_field_input.dart';
 
 
@@ -16,6 +26,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
+  Uint8List? _image=null;
+  bool _isloding = false;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -25,6 +37,43 @@ class _SignupScreenState extends State<SignupScreen> {
     bioController.dispose();
     usernameController.dispose();
   }
+  void navigteToLogin(){
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => const LoginScreen()));
+  }
+
+  void selectImage() async {
+    Uint8List im =  await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
+    });
+  }
+
+  void signUpUser() async {
+    setState(() {
+      _isloding = true;
+    });
+    String res = await Authmethods().signUpUser(
+        email: emailController.text,
+        password: passwordController.text,
+        username: usernameController.text,
+        bio: bioController.text,
+        file: _image!
+    );
+    if(res != 'success'){
+      showSnackBar(context, res);
+      setState(() {
+        _isloding = false;
+      });
+    }else{
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ResponsiveLayout(
+            webScreenLayout: WebScreenLayout(),
+            mobileScreenLayout: MobileScreenLayout()
+        ))
+      );
+    }
+    }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,14 +91,17 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(height: 64,),
                 Stack(
                   children: [
-                    const CircleAvatar(
+                    _image != null? CircleAvatar(
                       radius: 64,
-                      backgroundImage: NetworkImage('https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button.png'),
+                      backgroundImage: MemoryImage(_image!),
+                    ) : const CircleAvatar(
+                      radius: 64,
+                      backgroundImage: NetworkImage('https://th.bing.com/th/id/OIP.-rabTQfi3SEw62ITmi3KCAHaHa?pid=ImgDet&rs=1'),
                     ),
                     Positioned(
                       bottom: -10,
                       left: 80,
-                      child: IconButton(onPressed: (){}, icon: const Icon(Icons.add_a_photo),),)
+                      child: IconButton(onPressed: selectImage, icon: const Icon(Icons.add_a_photo),),)
                   ],
                 ),
                 const SizedBox(height: 24,),
@@ -87,8 +139,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   height: 24,
                 ),
                 InkWell(
+                  onTap:signUpUser ,
                   child: Container(
-                    child: Text('Sign up'),
+                    child: _isloding?const Center(child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),) :Text('Sign up'),
                     width: double.infinity,
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -105,13 +160,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      child: Text("Don't have an account"),
+                      child: Text("Don't have an account "),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                     GestureDetector(
-                      onTap: () { },
+                      onTap: navigteToLogin,
                       child: Container(
-                        child: Text("Sign up", style: TextStyle(
+                        child: Text("Login", style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),),
                         padding: const EdgeInsets.symmetric(vertical: 8),
