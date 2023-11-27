@@ -3,11 +3,18 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram/models/user.dart';
 import 'package:instagram/resources/storage_methods.dart';
 class Authmethods{
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<Users> getUserDetails() async{
+    User currentUser = auth.currentUser!;
+    DocumentSnapshot snap = await _firestore.collection('users').
+    doc(currentUser.uid).get();
+    return Users.fromSnap(snap);
+  }
 
   Future<String> signUpUser({
     required String email, required String password, required String username,
@@ -15,26 +22,23 @@ class Authmethods{
     String res = "Some error occurred";
     try{
       if(email.isNotEmpty || password.isNotEmpty || username.isNotEmpty ||
-          bio.isNotEmpty){
+          bio.isNotEmpty || Uint8List != null){
 
         //register user
         UserCredential cred = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
 
         // Upload profile picture
-        String photoUrl = await StorageMethod().uploadImageToStorage('profilePics', file, false);
+        String photoUrl = await StorageMethod()
+            .uploadImageToStorage('profilePics', file, false);
 
 
         // add details of user in data base
-        await _firestore.collection('users').doc(cred.user!.uid).set({
-          'username': username,
-          'uid': cred.user!.uid,
-          'email':email,
-          'bio':bio,
-          'followers':[],
-          'following':[],
-          'photo' : photoUrl,
-        });
+          Users user = Users(email: email, uid: cred.user!.uid,
+              photoUrl: photoUrl,
+              username: username,
+              bio: bio, followers: [], following: []);
+        await _firestore.collection('users').doc(cred.user!.uid).set(user.toJson());
         res = "success";
       }
     } on FirebaseAuthException catch(err){
