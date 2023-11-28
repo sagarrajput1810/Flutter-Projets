@@ -16,7 +16,7 @@ Future<String> uploadPost(
     String username,
     String profImage,
     ) async {
-  String res = "some error occured";
+  String res = "some error occured in post";
   try{
     String photoUrl =await  StorageMethod().uploadImageToStorage("posts", file, true);
     Posts post = Posts(
