@@ -44,6 +44,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     // Users user =Provider.of<UserProvider>(context).getUser;
     // print(user);
     return Scaffold(
+
       body: PageView(
         children: homeScreenItems,
         physics: const NeverScrollableScrollPhysics(),
